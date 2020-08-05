@@ -12,6 +12,7 @@
   "dependencies": {
     "hammerjs": "^2.0.8",
     "http-server": "^0.12.3",
-    "phaser": "^3.24.1"
+    "phaser": "^3.24.1",
+    "phaser3-rex-plugins": "^1.1.21"
   }
 }

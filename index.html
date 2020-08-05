@@ -3,9 +3,8 @@
 <html>
 <head>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
-    <script type="text/javascript" src="main.js">
-      var Hammer = require('hammerjs');
-
+    <script type="text/javascript">
+      import GesturePlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
       var config = {
           type: Phaser.AUTO,
           width: 800,
@@ -15,6 +14,14 @@
               create: create,
               update: update
           },
+          plugins : {
+            scene : [{
+              key : 'rexGestures',
+              plugin : GesturePlugin,
+              mapping : 'rexGestures'
+            },
+            ]
+          }
           backgroundColor: 0x444444
       };
 
@@ -25,6 +32,16 @@
       manager.add(Swipe);
 
       var game = new Phaser.Game(config);
+      var swiper = game.scene.rexGestures.add.swipe({
+        enabled : true,
+        threshold: 10,
+        velocityThreshold: 1000,
+        dir: '4dir'
+      });
+
+      swipe.on('swipe', function(swipe, gameObject, lastPointer){
+        snake.head.direction = 'left';
+      })
       var rectangle;
 
       var snake;
