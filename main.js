@@ -27,7 +27,11 @@ var coinRectangle;
 
 function preload ()
 {
-
+  this.load.scenePlugin({
+            key: 'rexgesturesplugin',
+            url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgesturesplugin.min.js',
+            sceneKey: 'rexGestures'
+        });
 }
 
 function create ()
@@ -58,6 +62,14 @@ function create ()
   }
   graphics.fillRectShape(snake.head);
   graphics.fillRectShape(coin.shape);
+
+  this.swipeInput = this.rexGestures.add.swipe({velocityThreshold : 1000, dir : '4dir'})
+  .on('swipe', function (swipe){
+    if(swipe['left'])
+    {
+      snake.direction = 'left';
+    }
+  }, this);
 }
 
 function bodySegmentMapHelper(currentSegment, index, arr)
