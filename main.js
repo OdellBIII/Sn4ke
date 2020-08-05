@@ -1,5 +1,4 @@
 
-import GesturePlugin from 'phaser3-rex-plugins/plugins/gestures-plugin.js';
 var config = {
     type: Phaser.AUTO,
     width: 800,
