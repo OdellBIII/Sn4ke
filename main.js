@@ -65,6 +65,7 @@ function create ()
 
   this.swipeInput = this.rexGestures.add.swipe({velocityThreshold : 1000, dir : '4dir'})
   .on('swipe', function (swipe){
+    alert("Swipe detected");
     if(swipe['left'])
     {
       snake.direction = 'left';
