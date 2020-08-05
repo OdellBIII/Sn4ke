@@ -8,15 +8,7 @@ var config = {
         create: create,
         update: update
     },
-    plugins : {
-      scene : [{
-        key : 'rexGestures',
-        plugin : GesturePlugin,
-        mapping : 'rexGestures'
-      },
-      ]
-    }
-    backgroundColor: 0x444444
+    backgroundColor: 0x444444,
 };
 
 //Setting up swiping feature
