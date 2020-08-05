@@ -1,4 +1,4 @@
-include 'hammerjs';
+var Hammer = require('hammerjs');
 
 var config = {
     type: Phaser.AUTO,
@@ -13,7 +13,7 @@ var config = {
 };
 
 //Setting up swiping feature
-var body = document.getElementsByTagName('body');
+var body = document.getElementsByTagName('html');
 var manager = new Hammer.Manager(body);
 var Swipe = new Hammer.Swipe();
 manager.add(Swipe);
