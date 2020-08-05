@@ -18,6 +18,13 @@
         backgroundColor: 0x444444
     };
 
+    //Setting up swiping feature
+
+    var body = document.getElementByTag('body');
+    var manager = new Hammer.Manager(body);
+    var Swipe = new Hammer.Swipe();
+    manager.add(Swipe);
+
     var game = new Phaser.Game(config);
     var rectangle;
 
@@ -75,6 +82,11 @@
       }
     }
 
+    manager.on('swipeleft', function(e) {
+
+      snake.direction = 'left';
+    });
+    
     function update()
     {
       if(cursors.left.isDown)

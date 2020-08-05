@@ -10,6 +10,7 @@
   "author": "Odell Blackmon III",
   "license": "ISC",
   "dependencies": {
+    "hammerjs": "^2.0.8",
     "http-server": "^0.12.3",
     "phaser": "^3.24.1"
   }
