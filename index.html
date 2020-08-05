@@ -19,8 +19,7 @@
     };
 
     //Setting up swiping feature
-
-    var body = document.getElementByTag('body');
+    var body = document.getElementsByTagName('body');
     var manager = new Hammer.Manager(body);
     var Swipe = new Hammer.Swipe();
     manager.add(Swipe);
@@ -86,7 +85,7 @@
 
       snake.direction = 'left';
     });
-    
+
     function update()
     {
       if(cursors.left.isDown)
