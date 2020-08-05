@@ -19,10 +19,6 @@ manager.add(Swipe);
 
 var game = new Phaser.Game(config);
 
-
-swipe.on('swipe', function(swipe, gameObject, lastPointer){
-  snake.head.direction = 'left';
-})
 var rectangle;
 
 var snake;
