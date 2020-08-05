@@ -13,9 +13,6 @@ var config = {
 
 //Setting up swiping feature
 var body = document.getElementsByTagName('html');
-var manager = new Hammer.Manager(body);
-var Swipe = new Hammer.Swipe();
-manager.add(Swipe);
 
 var game = new Phaser.Game(config);
 
@@ -74,11 +71,6 @@ function bodySegmentMapHelper(currentSegment, index, arr)
     return currentSegment
   }
 }
-
-manager.on('swipeleft', function(e) {
-
-  snake.direction = 'left';
-});
 
 function update()
 {
