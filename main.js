@@ -18,12 +18,7 @@ var Swipe = new Hammer.Swipe();
 manager.add(Swipe);
 
 var game = new Phaser.Game(config);
-var swiper = game.scene.rexGestures.add.swipe({
-  enabled : true,
-  threshold: 10,
-  velocityThreshold: 1000,
-  dir: '4dir'
-});
+
 
 swipe.on('swipe', function(swipe, gameObject, lastPointer){
   snake.head.direction = 'left';
