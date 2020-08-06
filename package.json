@@ -15,7 +15,7 @@
     "http-server": "^0.12.3",
     "phaser": "^3.24.1",
     "phaser-swipe": "^1.0.4",
-    "phaser3-rex-plugins": "^1.1.22",
+    "phaser3-rex-plugins": "^1.1.23",
     "phaser3-swipe": "^1.0.0",
     "phaser3-swipe-plugin": "^1.0.6",
     "webpack": "^4.44.1"
