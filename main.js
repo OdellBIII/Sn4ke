@@ -1,5 +1,5 @@
+import SwipePlugin from 'phaser3-swipe-plugin';
 
-var Swipe = require('phaser-swipe');
 
 var config = {
     type: Phaser.AUTO,
@@ -10,6 +10,15 @@ var config = {
         create: create,
         update: update
     },
+    plugins : {
+      global : [
+        {
+          key : 'SwipePlugin',
+          plugin: SwipePlugin,
+          start : true,
+        }
+      ]
+    }
     backgroundColor: 0x444444,
 };
 
@@ -28,10 +37,6 @@ var cursors;
 var coin;
 var coinRectangle;
 
-
-swipe.on('swipe', function(swipe, gameObject, lastPointer){
-  alert("Swipe detected!");
-}), scope;
 function preload ()
 {
 
@@ -39,7 +44,7 @@ function preload ()
 
 function create ()
 {
-  this.swipe = new Swipe(game);
+
   rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
   coinRectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
   cursors = this.input.keyboard.createCursorKeys();
@@ -67,6 +72,9 @@ function create ()
   graphics.fillRectShape(snake.head);
   graphics.fillRectShape(coin.shape);
 
+  game.events.on('swipe', dir => {
+    alert("Swipe detected!");
+  });
 }
 
 function bodySegmentMapHelper(currentSegment, index, arr)
@@ -83,10 +91,7 @@ function bodySegmentMapHelper(currentSegment, index, arr)
 
 function update()
 {
-  if(this.swipe.check() != null){
-    alert("Swipe detected!");
-  }
-  
+
   if(cursors.left.isDown)
   {
     snake.direction = 'left';
