@@ -4,8 +4,6 @@ const express = require('express');
 const app = express();
 const host = 'localhost';
 
-app.listen(port);
-
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
