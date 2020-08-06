@@ -1,3 +1,4 @@
+import { Swipe } from 'phaser3-rex-plugins/plugins/gestures.js';
 
 var config = {
     type: Phaser.AUTO,
@@ -15,6 +16,7 @@ var config = {
 var body = document.getElementsByTagName('html');
 
 var game = new Phaser.Game(config);
+var swipe = new Swipe(game.scene, config);
 
 var rectangle;
 
@@ -25,13 +27,13 @@ var cursors;
 var coin;
 var coinRectangle;
 
+
+swipe.on('swipe', function(swipe, gameObject, lastPointer){
+  alert("Swipe detected!");
+}), scope;
 function preload ()
 {
-  this.load.scenePlugin({
-            key: 'rexgesturesplugin',
-            url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexgesturesplugin.min.js',
-            sceneKey: 'rexGestures'
-        });
+
 }
 
 function create ()
@@ -63,14 +65,6 @@ function create ()
   graphics.fillRectShape(snake.head);
   graphics.fillRectShape(coin.shape);
 
-  this.swipeInput = this.rexGestures.add.swipe({velocityThreshold : 1000, dir : '4dir'})
-  .on('swipe', function (swipe){
-    alert("Swipe detected");
-    if(swipe['left'])
-    {
-      snake.direction = 'left';
-    }
-  }, this);
 }
 
 function bodySegmentMapHelper(currentSegment, index, arr)
