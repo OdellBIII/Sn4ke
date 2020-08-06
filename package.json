@@ -2,7 +2,7 @@
   "name": "sn4ke",
   "version": "1.0.0",
   "description": "Snake with 4 players",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
