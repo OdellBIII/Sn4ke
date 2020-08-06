@@ -13,6 +13,7 @@
     "hammerjs": "^2.0.8",
     "http-server": "^0.12.3",
     "phaser": "^3.24.1",
+    "phaser-swipe": "^1.0.4",
     "phaser3-rex-plugins": "^1.1.22",
     "webpack": "^4.44.1"
   }

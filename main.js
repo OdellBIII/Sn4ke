@@ -1,4 +1,5 @@
-import { Swipe } from 'phaser3-rex-plugins/plugins/gestures.js';
+
+var Swipe = require('phaser-swipe');
 
 var config = {
     type: Phaser.AUTO,
@@ -38,6 +39,7 @@ function preload ()
 
 function create ()
 {
+  this.swipe = new Swipe(game);
   rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
   coinRectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
   cursors = this.input.keyboard.createCursorKeys();
@@ -81,6 +83,10 @@ function bodySegmentMapHelper(currentSegment, index, arr)
 
 function update()
 {
+  if(this.swipe.check() != null){
+    alert("Swipe detected!");
+  }
+  
   if(cursors.left.isDown)
   {
     snake.direction = 'left';
