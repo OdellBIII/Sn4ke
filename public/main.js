@@ -1,4 +1,4 @@
-import SwipePlugin from 'phaser3-swipe-plugin';
+//import SwipePlugin from 'phaser3-swipe-plugin';
 
 
 var config = {
@@ -10,6 +10,7 @@ var config = {
         create: create,
         update: update
     },
+    /*
     plugins : {
       global : [
         {
@@ -19,6 +20,7 @@ var config = {
         }
       ]
     }
+    */
     backgroundColor: 0x444444,
 };
 
@@ -72,9 +74,11 @@ function create ()
   graphics.fillRectShape(snake.head);
   graphics.fillRectShape(coin.shape);
 
+  /*
   game.events.on('swipe', dir => {
     alert("Swipe detected!");
   });
+  */
 }
 
 function bodySegmentMapHelper(currentSegment, index, arr)
