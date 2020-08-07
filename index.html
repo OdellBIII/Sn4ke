@@ -82,8 +82,22 @@
 
   function update()
   {
-
-
+    if(cursors.up.isDown)
+    {
+      snake.direction = 'up';
+    }
+    else if(cursors.down.isDown)
+    {
+      snake.direction = 'down';
+    }
+    else if(cursors.right.isDown)
+    {
+      snake.direction = 'right';
+    }
+    else if(cursors.left.isDown)
+    {
+      snake.direction = 'left';
+    }
     if (counter == 15)
     {
       graphics.clear();
