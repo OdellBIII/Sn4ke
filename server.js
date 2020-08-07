@@ -6,7 +6,7 @@ const host = 'localhost';
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
-  res.sendStatusCode(200);
+  res.status(200).end();
 });
 
 app.listen(process.env.PORT || 3000, () => {
