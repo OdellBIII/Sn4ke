@@ -80,6 +80,11 @@
     }
   }
 
+  function turnSnake(direction)
+  {
+    snake.direction = direction;
+  }
+
   function update()
   {
     if(cursors.up.isDown)
@@ -148,5 +153,9 @@
 
   }
   </script>
+  <button id="left" onclick="turnSnake('left')">Left</button>
+  <button id="up" onclick="turnSnake('up')">Up</button>
+  <button id="down" onclick="turnSnake('down')">Down</button>
+  <button id="right" onclick="turnSnake('right')">Right</button>
 </body>
 </html>
