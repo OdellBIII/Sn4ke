@@ -7,129 +7,51 @@
 <body>
   <script>
   var config = {
-      type: Phaser.AUTO,
-      width: 800,
-      height: 600,
-      scene: {
-          preload: preload,
-          create: create,
-          update: update
-      },
-      backgroundColor: 0x400444,
-  };
-
-  //Setting up swiping feature
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 200 }
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create
+    }
+};
 
   var game = new Phaser.Game(config);
 
-  var rectangle;
-
-  var snake;
-  var graphics;
-  var counter;
-  var cursors;
-  var coin;
-  var coinRectangle;
-
   function preload ()
   {
+      this.load.setBaseURL('http://labs.phaser.io');
 
+      this.load.image('sky', 'assets/skies/space3.png');
+      this.load.image('logo', 'assets/sprites/phaser3-logo.png');
+      this.load.image('red', 'assets/particles/red.png');
   }
 
   function create ()
   {
+      this.add.image(400, 300, 'sky');
 
-    rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
-    coinRectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
-    cursors = this.input.keyboard.createCursorKeys();
-    graphics = this.add.graphics();
+      var particles = this.add.particles('red');
 
-    counter = 0;
+      var emitter = particles.createEmitter({
+          speed: 100,
+          scale: { start: 1, end: 0 },
+          blendMode: 'ADD'
+      });
 
-    snake = {
-      head : rectangle,
-      direction : 'up',
-      bodyX: [700, 700],
-      bodyY: [rectangle.y + 40, rectangle.y + 80],
-      delta : 40
-    }
+      var logo = this.physics.add.image(400, 100, 'logo');
 
-    coin = {
-      shape : coinRectangle
-    }
+      logo.setVelocity(100, 200);
+      logo.setBounce(1, 1);
+      logo.setCollideWorldBounds(true);
 
-    for(var i = 0; i < snake.bodyX.length; i++)
-    {
-      var currentSegmentRect = new Phaser.Geom.Rectangle(snake.bodyX[i], snake.bodyY[i], 30, 30, 0x000000);
-      graphics.fillRectShape(currentSegmentRect);
-    }
-    graphics.fillRectShape(snake.head);
-    graphics.fillRectShape(coin.shape);
-  }
-
-  function bodySegmentMapHelper(currentSegment, index, arr)
-  {
-    if (index != 0)
-    {
-      return currentSegment = arr[index - 1];
-    }
-    else
-    {
-      return currentSegment;
-    }
-  }
-
-  function update()
-  {
-
-
-    if (counter == 15)
-    {
-      graphics.clear();
-
-      if(Phaser.Geom.Rectangle.Overlaps(snake.head, coin.shape))
-      {
-        var bodyXTail = snake.bodyX[snake.bodyX.length - 1];
-        var bodyYTail = snake.bodyY[snake.bodyY.length - 1];
-        snake.bodyX.push(bodyXTail);
-        snake.bodyY.push(bodyYTail);
-
-      }
-      snake.bodyX = snake.bodyX.map(bodySegmentMapHelper);
-      snake.bodyY = snake.bodyY.map(bodySegmentMapHelper);
-      snake.bodyX[0] = snake.head.x;
-      snake.bodyY[0] = snake.head.y;
-
-      if (snake.direction == 'up')
-      {
-        snake.head.y -= snake.delta;
-      }
-      else if (snake.direction == 'down')
-      {
-        snake.head.y += snake.delta;
-      }
-      else if (snake.direction == 'left')
-      {
-        snake.head.x -= snake.delta;
-      }
-      else
-      {
-        snake.head.x += snake.delta;
-      }
-
-      for (var i = 0; i < snake.bodyX.length; i++)
-      {
-        var currentSegmentRect = new Phaser.Geom.Rectangle(snake.bodyX[i], snake.bodyY[i], 30, 30, 0x000000);
-        graphics.fillRectShape(currentSegmentRect);
-      }
-      graphics.fillRectShape(snake.head);
-      counter = 0;
-    }
-
-    graphics.fillRectShape(coin.shape);
-
-    counter += 1;
-
+      emitter.startFollow(logo);
   }
   </script>
 </body>
