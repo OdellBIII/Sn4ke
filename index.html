@@ -2,14 +2,22 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    canvas {
+      align-content: center
+    }
 
+    #control-pad {
+      width : 100%
+    }
+  </style>
 </head>
 <body>
   <script src="//cdn.jsdelivr.net/npm/phaser@3.24.0/dist/phaser.js"></script>
-  <script>
+  <script style="float : left">
   var config = {
       type: Phaser.AUTO,
-      width: 800,
+      width: 1000,
       height: 600,
       scene: {
           preload: preload,
@@ -153,9 +161,13 @@
 
   }
   </script>
-  <button id="left" onclick="turnSnake('left')">Left</button>
-  <button id="up" onclick="turnSnake('up')">Up</button>
-  <button id="down" onclick="turnSnake('down')">Down</button>
-  <button id="right" onclick="turnSnake('right')">Right</button>
+  <br />
+  <div id="control-pad">
+    <button id="left" onclick="turnSnake('left')">Left</button>
+    <button id="right" onclick="turnSnake('right')">Right</button>
+    <br/>
+    <button id="up" onclick="turnSnake('up')">Up</button>
+    <button id="down" onclick="turnSnake('down')">Down</button>
+  </div>
 </body>
 </html>
