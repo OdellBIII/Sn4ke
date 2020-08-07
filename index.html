@@ -65,12 +65,6 @@
     }
     graphics.fillRectShape(snake.head);
     graphics.fillRectShape(coin.shape);
-
-    /*
-    game.events.on('swipe', dir => {
-      alert("Swipe detected!");
-    });
-    */
   }
 
   function bodySegmentMapHelper(currentSegment, index, arr)
@@ -81,29 +75,13 @@
     }
     else
     {
-      return currentSegment
+      return currentSegment;
     }
   }
 
   function update()
   {
 
-    if(cursors.left.isDown)
-    {
-      snake.direction = 'left';
-    }
-    else if(cursors.right.isDown)
-    {
-      snake.direction = 'right';
-    }
-    else if(cursors.up.isDown)
-    {
-      snake.direction = 'up';
-    }
-    else if(cursors.down.isDown)
-    {
-      snake.direction = 'down';
-    }
 
     if (counter == 15)
     {
