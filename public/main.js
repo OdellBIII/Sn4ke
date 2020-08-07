@@ -1,5 +1,5 @@
 //import SwipePlugin from 'phaser3-swipe-plugin';
-import Phaser from 'phaser';
+import Phaser from './phaser';
 
 var config = {
     type: Phaser.AUTO,
