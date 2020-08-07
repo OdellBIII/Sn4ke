@@ -123,6 +123,7 @@
         var currentSegmentRect = new Phaser.Geom.Rectangle(snake.bodyX[i], snake.bodyY[i], 30, 30, 0x000000);
         graphics.fillRectShape(currentSegmentRect);
       }
+      graphics.fillStyle(0xFFFFFF, 1.0);
       graphics.fillRectShape(snake.head);
       counter = 0;
     }
