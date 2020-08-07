@@ -5,7 +5,7 @@ const app = express();
 const host = 'localhost';
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile("index.html");
   res.status(200).end();
 });
 
