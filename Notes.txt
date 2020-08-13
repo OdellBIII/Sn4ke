@@ -1,0 +1,7 @@
+Description: A game of snake where there is a timer and the longest snake after all time has elapsed wins.
+Snakes consume food to grow in size, but their size resets when another snakes bites into their side
+
+
+Tasks:
+- Have two snakes in the room at the same time.
+- Work on movements through messages
