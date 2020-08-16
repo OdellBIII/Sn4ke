@@ -4,15 +4,45 @@
 <head>
   <style>
     canvas {
-      align-content: center
+      align-content: center;
+      top : 25%;
     }
 
     #control-pad {
-      width : 100%,
+      width : 100%;
+      align-content : center;
+      padding: 100px;
+      position: absolute;
+      top: 50%;
+      left : 25%;
+    }
+
+    #up {
+      position: absolute;
+      left: 100px;
+      top : 10px;
+    }
+
+    #left {
+      position: absolute;
+      left : 10px;
+      width : 50%;
+    }
+
+    #right {
+      position : absolute;
+      left : 135px;
+      width : 50%;
+    }
+
+    #down {
+      position: absolute;
+      left: 80px;
+      top : 120px;
     }
 
     button {
-      font-size: 100px
+      font-size: 100px;
     }
   </style>
 </head>
@@ -50,10 +80,13 @@
   var graphics;
   var counter;
   var cursors;
-  var coin;
-  var coinRectangle;
+
+  var food;
+  var food_rectangle;
   var socket;
-  var isPaused;
+
+  var time;
+  var timer_interval;
 
   function preload ()
   {
@@ -70,6 +103,8 @@
       snake.head.y = data.y;
       snake.bodyY[0] = snake.head.y + 40;
       snake.bodyY[1] = snake.head.y + 80;
+      snake.isEnabled = false;
+      snake.length = 3;
     });
 
     socket.on('enable-player-2', function(data){
@@ -82,23 +117,57 @@
 
       player2.bodyY[0] = data.y + 40;
       player2.bodyY[1] = data.y + 80;
-      player2.isEnabled = true;
+      player2.isEnabled = false;
+      player2.length = 3;
 
-      console.log(typeof(data.y));
-      console.log(player2);
     });
 
+    //Starting match
+    socket.on('start-match', function(data){
+      player2.isEnabled = true;
+      snake.isEnabled = true;
+
+      timer_interval = setInterval(function(data){
+        time -= 1;
+        document.getElementById('timer').innerHTML = time;
+
+        if(time == 0)
+        {
+          clearInterval(timer_interval);
+          declareWinner(snake, player2);
+        }
+      }, 1000);
+    });
+
+    //Tracking other player movement
     socket.on('other-player-movement', function(data){
-      if(data.player == 'player2'){
-        player2.direction = data.direction;
-      }
+
+      player2 = data;
+
+    });
+
+    //Making new food
+
+    socket.on('make-food', function(data) {
+
+      food.shape.x = data.x;
+      food.shape.y = data.y;
+      food.isEnabled = true;
+    });
+
+    //Food was consumed by other player
+
+    socket.on('consume-food', function(data){
+
+      food.isEnabled = false;
     });
 
     rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
     player2_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
-    coinRectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
+    food_rectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
+
     cursors = this.input.keyboard.createCursorKeys();
     graphics = this.add.graphics();
 
@@ -110,6 +179,9 @@
       bodyX: [0, 0],
       bodyY: [0, 0],
       delta : 40,
+      isEnabled : false,
+      name : "player-1",
+      length : 0,
     };
 
     player2 = {
@@ -119,13 +191,20 @@
       bodyY : [0, 0],
       delta : 40,
       isEnabled : false,
+      name : "player-2",
+      length : 0,
     };
 
-    coin = {
-      shape : coinRectangle,
+    food = {
+      shape : food_rectangle,
+      isEnabled : false,
     };
 
     isPaused = true;
+
+    time = 10;
+    document.getElementById('timer').innerHTML = time;
+
   }
 
   function bodySegmentMapHelper(currentSegment, index, arr)
@@ -145,99 +224,177 @@
     snake.direction = direction;
   }
 
-  function update()
+  function handleUserInput()
   {
     if(cursors.up.isDown)
     {
       snake.direction = 'up';
-      socket.emit('other-player-movement', {player : "player2", direction : "up"});
+      //socket.emit('other-player-movement', {player : "player2", direction : "up"});
     }
     else if(cursors.down.isDown)
     {
       snake.direction = 'down';
-      socket.emit('other-player-movement', {player : "player2", direction : "down"});
+      //socket.emit('other-player-movement', {player : "player2", direction : "down"});
     }
     else if(cursors.right.isDown)
     {
       snake.direction = 'right';
-      socket.emit('other-player-movement', {player : "player2", direction : "right"});
+      //socket.emit('other-player-movement', {player : "player2", direction : "right"});
     }
     else if(cursors.left.isDown)
     {
       snake.direction = 'left';
-      socket.emit('other-player-movement', {player : "player2", direction : "left"});
+      //socket.emit('other-player-movement', {player : "player2", direction : "left"});
     }
-    if (counter == 30)
+  }
+
+  function moveSnake(snake_player)
+  {
+    snake_player.bodyX = snake_player.bodyX.map(bodySegmentMapHelper);
+    snake_player.bodyY = snake_player.bodyY.map(bodySegmentMapHelper);
+    snake_player.bodyX[0] = snake_player.head.x;
+    snake_player.bodyY[0] = snake_player.head.y;
+
+    if (snake_player.direction == 'up')
     {
+      snake_player.head.y -= snake_player.delta;
+    }
+    else if (snake_player.direction == 'down')
+    {
+      snake_player.head.y += snake_player.delta;
+    }
+    else if (snake_player.direction == 'left')
+    {
+      snake_player.head.x -= snake_player.delta;
+    }
+    else if (snake_player.direction == 'right')
+    {
+      snake_player.head.x += snake_player.delta;
+    }
+
+    if(snake_player.head.y < 0)
+    {
+      snake_player.head.y = config.height;
+    }
+    else if(snake_player.head.y > config.height)
+    {
+      snake_player.head.y = 0;
+    }
+    else if(snake_player.head.x < 0)
+    {
+      snake_player.head.x = config.width;
+    }
+    else if(snake_player.head.x > config.width)
+    {
+      snake_player.head.x = 0;
+    }
+
+    socket.emit("other-player-movement", snake_player);
+  }
+
+  function drawSnake(snake_player)
+  {
+    for (var i = 0; i < snake_player.bodyX.length; i++)
+    {
+      var currentSegmentRect = new Phaser.Geom.Rectangle(snake_player.bodyX[i], snake_player.bodyY[i], 30, 30, 0x000000);
+      graphics.fillRectShape(currentSegmentRect);
+    }
+
+    graphics.fillStyle(0xFFFFFF, 1.0);
+    graphics.fillRectShape(snake_player.head);
+  }
+
+  function drawFood(food)
+  {
+    if(food.isEnabled)
+    {
+      graphics.fillStyle(0xFFFFFF, 1.0);
+      graphics.fillRectShape(food.shape);
+    }
+  }
+  function handleFoodConsumption(snake_player, food)
+  {
+    if(food.isEnabled && Phaser.Geom.Rectangle.Overlaps(snake_player.head, food.shape))
+    {
+      var bodyXTail = snake_player.bodyX[snake_player.bodyX.length - 1];
+      var bodyYTail = snake_player.bodyY[snake_player.bodyY.length - 1];
+      snake_player.bodyX.push(bodyXTail);
+      snake_player.bodyY.push(bodyYTail);
+      food.isEnabled = false;
+      snake_player.length += 1;
+
+      socket.emit('consume-food');
+    }
+  }
+
+  function declareWinner(snake_player1, snake_player2)
+  {
+    if(snake_player1.length > snake_player2.length && snake_player1.name == 'player-1')
+    {
+      document.getElementById('timer').innerHTML = "You won!";
+    }
+    else if(snake_player1.length < snake_player2.length && snake_player1.name == 'player-1')
+    {
+      document.getElementById('timer').innerHTML = "You lost!";
+    }
+  }
+
+  function update()
+  {
+
+    handleUserInput();
+    if(counter == 15)
+    {
+
       graphics.clear();
 
-      if(Phaser.Geom.Rectangle.Overlaps(snake.head, coin.shape))
-      {
-        var bodyXTail = snake.bodyX[snake.bodyX.length - 1];
-        var bodyYTail = snake.bodyY[snake.bodyY.length - 1];
-        snake.bodyX.push(bodyXTail);
-        snake.bodyY.push(bodyYTail);
 
+
+      if(snake.isEnabled)
+      {
+        handleFoodConsumption(snake, food);
+        drawSnake(snake);
+        moveSnake(snake);
       }
 
-      player2.bodyX = player2.bodyX.map(bodySegmentMapHelper);
-      player2.bodyY = player2.bodyY.map(bodySegmentMapHelper);
-      player2.bodyX[0] = player2.head.x;
-      player2.bodyY[0] = player2.head.y;
-
-
-
-      snake.bodyX = snake.bodyX.map(bodySegmentMapHelper);
-      snake.bodyY = snake.bodyY.map(bodySegmentMapHelper);
-      snake.bodyX[0] = snake.head.x;
-      snake.bodyY[0] = snake.head.y;
-
-      if (snake.direction == 'up')
+      if(player2.isEnabled)
       {
-        snake.head.y -= snake.delta;
-      }
-      else if (snake.direction == 'down')
-      {
-        snake.head.y += snake.delta;
-      }
-      else if (snake.direction == 'left')
-      {
-        snake.head.x -= snake.delta;
-      }
-      else
-      {
-        snake.head.x += snake.delta;
+        //handleFoodConsumption(player2, food);
+        //moveSnake(player2);
+        drawSnake(player2);
       }
 
-      for (var i = 0; i < player2.bodyX.length; i++)
+      if(food.isEnabled)
       {
-        var currentSegmentRect = new Phaser.Geom.Rectangle(player2.bodyX[i], player2.bodyY[i], 30, 30, 0x000000);
-        graphics.fillRectShape(currentSegmentRect);
-      }
-      graphics.fillStyle(0xFFFFFF, 1.0);
-      graphics.fillRectShape(player2.head);
-
-      for (var i = 0; i < snake.bodyX.length; i++)
-      {
-        var currentSegmentRect = new Phaser.Geom.Rectangle(snake.bodyX[i], snake.bodyY[i], 30, 30, 0x000000);
-        graphics.fillRectShape(currentSegmentRect);
+        graphics.fillStyle(0xFFFFFF, 1.0);
+        graphics.fillRectShape(food.shape);
       }
 
-      graphics.fillStyle(0xFFFFFF, 1.0);
-      graphics.fillRectShape(snake.head);
+      counter = 0;
+    }
 
-
-      graphics.fillStyle(0xFFFFFF, 1.0);
-      graphics.fillRectShape(coin.shape);
+    counter += 1;
   }
   </script>
   <br />
   <div id="control-pad">
-    <button id="left" onclick="turnSnake('left')">Left</button>
-    <button id="right" onclick="turnSnake('right')">Right</button>
+    <div id="up">
+      <button id="up" onclick="turnSnake('up')">Up</button>
+    </div>
     <br/>
-    <button id="up" onclick="turnSnake('up')">Up</button>
-    <button id="down" onclick="turnSnake('down')">Down</button>
+    <div id="left">
+      <button id="left" onclick="turnSnake('left')">Left</button>
+    </div>
+    <div id="right">
+      <button id="right" onclick="turnSnake('right')">Right</button>
+    </div>
+    <br/>
+    <div id="down">
+      <button id="down" onclick="turnSnake('down')">Down</button>
+    </div>
+    <br/>
   </div>
+  <br/>
+  <h1 id="timer">00:00</h1>
 </body>
 </html>
