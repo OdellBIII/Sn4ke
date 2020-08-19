@@ -3,5 +3,10 @@ Snakes consume food to grow in size, but their size resets when another snakes b
 
 
 Tasks:
-- Have two snakes in the room at the same time.
-- Work on movements through messages
+- Have two snakes in the room at the same time. [DONE]
+- Work on movements through messages [DONE]
+- Add in room creation for two players [DONE]
+- Add different color food [Not started]
+- Add speed boost for x seconds on same color food consumption [Not started]
+- Add information about which snake color you are what color food was consumed [Not started]
+- Add eyes to snakes [Not started]

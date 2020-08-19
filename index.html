@@ -3,9 +3,55 @@
 <html>
 <head>
   <style>
+
+    html {
+      width : 100vw;
+      height : 100vw;
+    }
+    body {
+      position: fixed;
+      background-color:  #122540;
+      width : 100%;
+      height : 100%;
+      padding : 0px;
+      margin : 0;
+    }
     canvas {
-      align-content: center;
-      top : 25%;
+      top : 10%;
+      left : 25%;
+    }
+
+    .controller_button {
+
+      width : 150px;
+      height : 150px;
+    }
+    .timer-section {
+      background: #515151;
+      position: absolute;
+      width : 100%;
+      text-align: center;
+      min-width: 100%;
+      top : 0;
+      left: 0;
+      right: 0;
+      margin : 0 auto;
+      padding : 0;
+    }
+    #timer {
+      text-align: center;
+      background-color: #FFFFFF;
+      color: #515151;
+      width : 50%;
+      margin-left : 25%;
+      margin-right : 25%;
+      margin-top: 0;
+      margin-bottom: 0;
+      padding : 10px;
+      font-style: normal;
+      font-family: courier;
+      font-color:
+
     }
 
     #control-pad {
@@ -14,12 +60,12 @@
       padding: 100px;
       position: absolute;
       top: 50%;
-      left : 25%;
+      left : 30%;
     }
 
     #up {
       position: absolute;
-      left: 100px;
+      left: 120px;
       top : 10px;
     }
 
@@ -31,19 +77,17 @@
 
     #right {
       position : absolute;
-      left : 135px;
+      left : 220px;
       width : 50%;
     }
 
     #down {
       position: absolute;
-      left: 80px;
-      top : 120px;
+      left: 120px;
+      top : 230px;
     }
 
-    button {
-      font-size: 100px;
-    }
+
   </style>
 </head>
 <body>
@@ -62,7 +106,8 @@
           create: create,
           update: update
       },
-      backgroundColor: 0x400444,
+      backgroundColor: 0x303844,
+      ticker : 15,
   };
 
   //Setting up swiping feature
@@ -101,10 +146,18 @@
 
       snake.head.x = data.x;
       snake.head.y = data.y;
+
       snake.bodyY[0] = snake.head.y + 40;
       snake.bodyY[1] = snake.head.y + 80;
+
+      snake.color = data.color;
+
       snake.isEnabled = false;
       snake.length = 3;
+      snake.roomno = data.roomno;
+      snake.isBoostEnabled = data.isBoostEnabled;
+      snake.boost = data.boost;
+      config.ticker = data.ticker;
     });
 
     socket.on('enable-player-2', function(data){
@@ -117,6 +170,8 @@
 
       player2.bodyY[0] = data.y + 40;
       player2.bodyY[1] = data.y + 80;
+
+      player2.color = data.color;
       player2.isEnabled = false;
       player2.length = 3;
 
@@ -126,7 +181,7 @@
     socket.on('start-match', function(data){
       player2.isEnabled = true;
       snake.isEnabled = true;
-
+      document.getElementById('timer').innerHTML = time;
       timer_interval = setInterval(function(data){
         time -= 1;
         document.getElementById('timer').innerHTML = time;
@@ -162,6 +217,36 @@
       food.isEnabled = false;
     });
 
+    socket.on('snake-collision', function(data){
+
+      if(data.name == snake.name)
+      {
+        snake.head.x = data.x;
+        snake.head.y = data.y;
+
+        snake.bodyX = [data.x, data.x];
+
+        snake.bodyY = [data.y + snake.delta, data.y + (snake.delta * 2)];
+
+        snake.isEnabled = true;
+
+        snake.length = 3;
+      }
+      else if(data.name == player2.name)
+      {
+        player2.head.x = data.x;
+        player2.head.y = data.y;
+
+        player2.bodyX = [data.x, data.x];
+
+        player2.bodyY = [data.y + player2.delta, data.y + (player2.delta * 2)];
+
+        player2.isEnabled = true;
+
+        player2.length = 3;
+      }
+    })
+
     rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
     player2_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
@@ -182,7 +267,9 @@
       isEnabled : false,
       name : "player-1",
       length : 0,
+      roomno : "",
     };
+
 
     player2 = {
       head : player2_head,
@@ -198,13 +285,12 @@
     food = {
       shape : food_rectangle,
       isEnabled : false,
+      color : 0xFFFFFF,
     };
 
     isPaused = true;
 
-    time = 10;
-    document.getElementById('timer').innerHTML = time;
-
+    time = 60;
   }
 
   function bodySegmentMapHelper(currentSegment, index, arr)
@@ -226,26 +312,56 @@
 
   function handleUserInput()
   {
-    if(cursors.up.isDown)
+    if(cursors.up.isDown && snake.direction != 'down')
     {
       snake.direction = 'up';
-      //socket.emit('other-player-movement', {player : "player2", direction : "up"});
     }
-    else if(cursors.down.isDown)
+    else if(cursors.down.isDown && snake.direction != 'up')
     {
       snake.direction = 'down';
-      //socket.emit('other-player-movement', {player : "player2", direction : "down"});
     }
-    else if(cursors.right.isDown)
+    else if(cursors.right.isDown && snake.direction != 'left')
     {
       snake.direction = 'right';
-      //socket.emit('other-player-movement', {player : "player2", direction : "right"});
     }
-    else if(cursors.left.isDown)
+    else if(cursors.left.isDown && snake.direction != 'right')
     {
       snake.direction = 'left';
-      //socket.emit('other-player-movement', {player : "player2", direction : "left"});
     }
+  }
+
+  function applyBoost(snake_player)
+  {
+    function boostAddMapper(value) {
+      return value + snake_player.boost;
+    }
+
+    function boostSubtractionMapper(value) {
+      return value - snake_player.boost;
+    }
+
+    if (snake_player.direction == 'up')
+    {
+      snake_player.head.y -= snake_player.boost;
+      snake_player.bodyY = snake_player.bodyY.map(boostSubtractionMapper);
+    }
+    else if (snake_player.direction == 'down')
+    {
+      snake_player.head.y += snake_player.boost;
+      snake_player.bodyY = snake_player.bodyY.map(boostAddMapper);
+    }
+    else if (snake_player.direction == 'left')
+    {
+      snake_player.head.x -= snake_player.boost;
+      snake_player.bodyX = snake_player.bodyX.map(boostSubtractionMapper);
+    }
+    else if (snake_player.direction == 'right')
+    {
+      snake_player.head.x += snake_player.boost;
+      snake_player.bodyX = snake_player.bodyX.map(boostAddMapper);
+    }
+
+    return snake_player;
   }
 
   function moveSnake(snake_player)
@@ -289,28 +405,30 @@
       snake_player.head.x = 0;
     }
 
+    if(snake_player.isBoostEnabled)
+    {
+      snake_player = applyBoost(snake_player);
+    }
+
     socket.emit("other-player-movement", snake_player);
   }
 
   function drawSnake(snake_player)
   {
+    graphics.fillStyle(snake_player.color, 1.0);
     for (var i = 0; i < snake_player.bodyX.length; i++)
     {
-      var currentSegmentRect = new Phaser.Geom.Rectangle(snake_player.bodyX[i], snake_player.bodyY[i], 30, 30, 0x000000);
+      var currentSegmentRect = new Phaser.Geom.Rectangle(snake_player.bodyX[i], snake_player.bodyY[i], 30, 30, snake_player.color);
       graphics.fillRectShape(currentSegmentRect);
     }
 
-    graphics.fillStyle(0xFFFFFF, 1.0);
     graphics.fillRectShape(snake_player.head);
   }
 
   function drawFood(food)
   {
-    if(food.isEnabled)
-    {
-      graphics.fillStyle(0xFFFFFF, 1.0);
-      graphics.fillRectShape(food.shape);
-    }
+    graphics.fillStyle(food.color, 1.0);
+    graphics.fillRectShape(food.shape);
   }
   function handleFoodConsumption(snake_player, food)
   {
@@ -323,8 +441,28 @@
       food.isEnabled = false;
       snake_player.length += 1;
 
-      socket.emit('consume-food');
+      socket.emit('consume-food', {roomno : snake_player.roomno});
     }
+  }
+
+  function collisionCheckHelper(snake_head_shape, other_snake_body_segment)
+  {
+
+    return Phaser.Geom.Rectangle.Overlaps(snake_head_shape, other_snake_body_segment);
+  }
+
+  function snakesDidCollide(snake_collider, snake_victim)
+  {
+    for(var i = 0; i < snake_victim.bodyX.length; i++)
+    {
+      var currentSegmentRect = new Phaser.Geom.Rectangle(snake_victim.bodyX[i], snake_victim.bodyY[i], 30, 30, 0x000000);
+
+      if(collisionCheckHelper(snake_collider.head, currentSegmentRect))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   function declareWinner(snake_player1, snake_player2)
@@ -337,13 +475,17 @@
     {
       document.getElementById('timer').innerHTML = "You lost!";
     }
+    else
+    {
+      document.getElementById('timer').innerHTML = "Tie!";
+    }
   }
 
   function update()
   {
 
     handleUserInput();
-    if(counter == 15)
+    if(counter == config.ticker)
     {
 
       graphics.clear();
@@ -355,19 +497,20 @@
         handleFoodConsumption(snake, food);
         drawSnake(snake);
         moveSnake(snake);
+        if(snakesDidCollide(snake, player2))
+        {
+          socket.emit('snake-collision', {name : snake.name, roomno : snake.roomno});
+        }
       }
 
       if(player2.isEnabled)
       {
-        //handleFoodConsumption(player2, food);
-        //moveSnake(player2);
         drawSnake(player2);
       }
 
       if(food.isEnabled)
       {
-        graphics.fillStyle(0xFFFFFF, 1.0);
-        graphics.fillRectShape(food.shape);
+        drawFood(food);
       }
 
       counter = 0;
@@ -379,22 +522,24 @@
   <br />
   <div id="control-pad">
     <div id="up">
-      <button id="up" onclick="turnSnake('up')">Up</button>
+      <input type="image" src="img/directional_up.png" class="controller_button" onclick="turnSnake('up')" />
     </div>
     <br/>
     <div id="left">
-      <button id="left" onclick="turnSnake('left')">Left</button>
+      <input type="image" src="img/directional_left.png" class="controller_button" onclick="turnSnake('left')" />
     </div>
     <div id="right">
-      <button id="right" onclick="turnSnake('right')">Right</button>
+      <input type="image" src="img/directional_right.png" class="controller_button" onclick="turnSnake('right')" />
     </div>
     <br/>
     <div id="down">
-      <button id="down" onclick="turnSnake('down')">Down</button>
+      <input type="image" src="img/directional_down.png" class="controller_button" onclick="turnSnake('down')" />
     </div>
     <br/>
   </div>
   <br/>
-  <h1 id="timer">00:00</h1>
+  <div class="timer-section">
+    <h1 id="timer">Waiting on another player to connect...</h1>
+  </div>
 </body>
 </html>
