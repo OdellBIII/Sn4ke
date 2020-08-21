@@ -155,9 +155,10 @@
       snake.isEnabled = false;
       snake.length = 3;
       snake.roomno = data.roomno;
-      snake.isBoostEnabled = data.isBoostEnabled;
-      snake.boost = data.boost;
-      config.ticker = data.ticker;
+      snake.ticker = data.ticker;
+
+      snake.total_food = 0;
+      config.ticker = 15;
     });
 
     socket.on('enable-player-2', function(data){
@@ -207,6 +208,7 @@
 
       food.shape.x = data.x;
       food.shape.y = data.y;
+      food.color = data.color;
       food.isEnabled = true;
     });
 
@@ -245,7 +247,7 @@
 
         player2.length = 3;
       }
-    })
+    });
 
     rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
@@ -330,40 +332,6 @@
     }
   }
 
-  function applyBoost(snake_player)
-  {
-    function boostAddMapper(value) {
-      return value + snake_player.boost;
-    }
-
-    function boostSubtractionMapper(value) {
-      return value - snake_player.boost;
-    }
-
-    if (snake_player.direction == 'up')
-    {
-      snake_player.head.y -= snake_player.boost;
-      snake_player.bodyY = snake_player.bodyY.map(boostSubtractionMapper);
-    }
-    else if (snake_player.direction == 'down')
-    {
-      snake_player.head.y += snake_player.boost;
-      snake_player.bodyY = snake_player.bodyY.map(boostAddMapper);
-    }
-    else if (snake_player.direction == 'left')
-    {
-      snake_player.head.x -= snake_player.boost;
-      snake_player.bodyX = snake_player.bodyX.map(boostSubtractionMapper);
-    }
-    else if (snake_player.direction == 'right')
-    {
-      snake_player.head.x += snake_player.boost;
-      snake_player.bodyX = snake_player.bodyX.map(boostAddMapper);
-    }
-
-    return snake_player;
-  }
-
   function moveSnake(snake_player)
   {
     snake_player.bodyX = snake_player.bodyX.map(bodySegmentMapHelper);
@@ -405,11 +373,6 @@
       snake_player.head.x = 0;
     }
 
-    if(snake_player.isBoostEnabled)
-    {
-      snake_player = applyBoost(snake_player);
-    }
-
     socket.emit("other-player-movement", snake_player);
   }
 
@@ -430,6 +393,12 @@
     graphics.fillStyle(food.color, 1.0);
     graphics.fillRectShape(food.shape);
   }
+
+  function changeSpeed(snake_player, speedBoost){
+
+    snake_player.ticker = speedBoost;
+  }
+
   function handleFoodConsumption(snake_player, food)
   {
     if(food.isEnabled && Phaser.Geom.Rectangle.Overlaps(snake_player.head, food.shape))
@@ -440,8 +409,20 @@
       snake_player.bodyY.push(bodyYTail);
       food.isEnabled = false;
       snake_player.length += 1;
-
+      snake_player.total_food += 1;
       socket.emit('consume-food', {roomno : snake_player.roomno});
+
+      if(snake.color == food.color)
+      {
+        // The smaller the value, the faster the snake moves.
+        // SpeedBoost value must be smaller than config.ticker
+        // or the snake will move slower.
+
+        changeSpeed(snake, 10);
+        setTimeout(function(){
+          changeSpeed(snake, config.ticker)
+        }, 5000);
+      }
     }
   }
 
@@ -485,22 +466,28 @@
   {
 
     handleUserInput();
-    if(counter == config.ticker)
+
+    // Movement Loop
+
+    if(counter % snake.ticker == 0 && snake.isEnabled)
     {
-
-      graphics.clear();
-
-
-
-      if(snake.isEnabled)
-      {
-        handleFoodConsumption(snake, food);
-        drawSnake(snake);
         moveSnake(snake);
+        handleFoodConsumption(snake, food);
         if(snakesDidCollide(snake, player2))
         {
           socket.emit('snake-collision', {name : snake.name, roomno : snake.roomno});
         }
+    }
+
+    // Render Loop
+    if(counter % config.ticker == 0)
+    {
+      graphics.clear();
+
+      if(snake.isEnabled)
+      {
+
+        drawSnake(snake);
       }
 
       if(player2.isEnabled)
@@ -513,7 +500,6 @@
         drawFood(food);
       }
 
-      counter = 0;
     }
 
     counter += 1;

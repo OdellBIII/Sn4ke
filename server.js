@@ -22,8 +22,19 @@ app.get("/", (req, res) => {
 
 
 
-const startPosition1 = {x : 100, y : 400, color : 0xFF0000, ticker : 10, isBoostEnabled : true, boost : 20};
-const startPosition2 = {x : 700, y : 400, color : 0x0000FF, ticker : 10, isBoostEnabled : false, boost : 10};
+const startPosition1 = {x : 100, y : 400, color : 0xFF0000, ticker : 15, speedBoost : 10};
+const startPosition2 = {x : 700, y : 400, color : 0x0000FF, ticker : 15, speedBoost : 10};
+const colors = [0xFF0000, 0x0000FF];
+
+// Generate food with random x,y coordinates and random color
+function generateRandomFood(width, height, roomno, colors){
+
+  var color = colors[Math.floor(Math.random() * colors.length)];
+  var x = Math.floor(Math.random() * width);
+  var y = Math.floor(Math.random() * height);
+  io.in("room-"+ roomno).emit('make-food', {x : x, y : y, color : color});
+  console.log("Food created at location: " + x + ", " + y);
+}
 
 var roomno = 1;
 io.on('connection', (socket) => {
@@ -50,12 +61,8 @@ io.on('connection', (socket) => {
 
     socket.to("room-"+data.roomno).emit('consume-food');
 
-    setTimeout(function(irrev){
-
-      var x = Math.ceil(Math.random() * 1000);
-      var y = Math.ceil(Math.random() * 600);
-      io.in("room-"+data.roomno).emit('make-food', {x : x, y : y});
-      console.log("Food created at location: " + x + ", " + y);
+    setTimeout(function(){
+      generateRandomFood(1000, 600, data.roomno, colors);
     }, 3000);
   });
 

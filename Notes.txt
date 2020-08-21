@@ -6,7 +6,11 @@ Tasks:
 - Have two snakes in the room at the same time. [DONE]
 - Work on movements through messages [DONE]
 - Add in room creation for two players [DONE]
-- Add different color food [Not started]
+- Add different color food [DONE]
 - Add speed boost for x seconds on same color food consumption [Not started]
 - Add information about which snake color you are what color food was consumed [Not started]
 - Add eyes to snakes [Not started]
+- Increase number of players per room to 4 [Not Started]
+- Add in 2 more spawn locations [Not started]
+- Store spawn locations in player object [Not started]
+- Add in full screen
