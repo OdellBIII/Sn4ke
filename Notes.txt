@@ -9,8 +9,8 @@ Tasks:
 - Add different color food [DONE]
 - Add speed boost for x seconds on same color food consumption [DONE]
 - Add information about which snake color you are what color food was consumed [DONE]
-- Increase number of players per room to 4 [Not Started]
-- Add in 2 more spawn locations [Not started]
+- Add in 2 more spawn locations [Done];
+- Increase number of players per room to 4 [In progress]
 - Store spawn locations in player object [Not started]
 - Add in full screen [Not started]
 - Add sound

@@ -125,6 +125,9 @@
   var player3;
   var player3_head;
 
+  var player4;
+  var player4_head;
+
   var graphics;
   var counter;
   var cursors;
@@ -211,6 +214,24 @@
           player3.length = 3;
           player3.name = data.player3.name;
           player3.playerNumber = data.player3.playerNumber;
+
+          player4.startPositionX = data.player4.x;
+          player4.startPositionY = data.player4.y;
+
+          player4.head.x = data.player4.x;
+          player4.head.y = data.player4.y;
+
+          player4.bodyX[0] = data.player4.x;
+          player4.bodyX[1] = data.player4.x;
+
+          player4.bodyY[0] = data.player4.y + 40;
+          player4.bodyY[1] = data.player4.y + 80;
+
+          player4.color = data.player4.color;
+          player4.isEnabled = false;
+          player4.length = 3;
+          player4.name = data.player4.name;
+          player4.playerNumber = data.player4.playerNumber;
           break;
 
         case "player-2":
@@ -252,6 +273,24 @@
           player3.length = 3;
           player3.name = data.player3.name;
           player3.playerNumber = data.player3.playerNumber;
+
+          player4.startPositionX = data.player4.x;
+          player4.startPositionY = data.player4.y;
+
+          player4.head.x = data.player4.x;
+          player4.head.y = data.player4.y;
+
+          player4.bodyX[0] = data.player4.x;
+          player4.bodyX[1] = data.player4.x;
+
+          player4.bodyY[0] = data.player4.y + 40;
+          player4.bodyY[1] = data.player4.y + 80;
+
+          player4.color = data.player4.color;
+          player4.isEnabled = false;
+          player4.length = 3;
+          player4.name = data.player4.name;
+          player4.playerNumber = data.player4.playerNumber;
           break;
 
         case "player-3":
@@ -294,6 +333,81 @@
           player3.name = data.player2.name;
           player3.playerNumber = data.player2.playerNumber;
 
+          player4.startPositionX = data.player4.x;
+          player4.startPositionY = data.player4.y;
+
+          player4.head.x = data.player4.x;
+          player4.head.y = data.player4.y;
+
+          player4.bodyX[0] = data.player4.x;
+          player4.bodyX[1] = data.player4.x;
+
+          player4.bodyY[0] = data.player4.y + 40;
+          player4.bodyY[1] = data.player4.y + 80;
+
+          player4.color = data.player4.color;
+          player4.isEnabled = false;
+          player4.length = 3;
+          player4.name = data.player4.name;
+          player4.playerNumber = data.player4.playerNumber;
+
+          break;
+
+        case "player-4":
+          player2.startPositionX = data.player1.x;
+          player2.startPositionY = data.player1.y;
+
+          player2.head.x = data.player1.x;
+          player2.head.y = data.player1.y;
+
+          player2.bodyX[0] = data.player1.x;
+          player2.bodyX[1] = data.player1.x;
+
+          player2.bodyY[0] = data.player1.y + 40;
+          player2.bodyY[1] = data.player1.y + 80;
+
+          player2.color = data.player1.color;
+          player2.isEnabled = false;
+          player2.length = 3;
+          player2.name = data.player1.name;
+          player2.playerNumber = data.player1.playerNumber;
+
+
+          player3.startPositionX = data.player2.x;
+          player3.startPositionY = data.player2.y;
+
+          player3.head.x = data.player2.x;
+          player3.head.y = data.player2.y;
+
+          player3.bodyX[0] = data.player2.x;
+          player3.bodyX[1] = data.player2.x;
+
+          player3.bodyY[0] = data.player2.y + 40;
+          player3.bodyY[1] = data.player2.y + 80;
+
+          player3.color = data.player2.color;
+          player3.isEnabled = false;
+          player3.length = 3;
+          player3.name = data.player2.name;
+          player3.playerNumber = data.player2.playerNumber;
+
+          player4.startPositionX = data.player3.x;
+          player4.startPositionY = data.player3.y;
+
+          player4.head.x = data.player3.x;
+          player4.head.y = data.player3.y;
+
+          player4.bodyX[0] = data.player3.x;
+          player4.bodyX[1] = data.player3.x;
+
+          player4.bodyY[0] = data.player3.y + 40;
+          player4.bodyY[1] = data.player3.y + 80;
+
+          player4.color = data.player3.color;
+          player4.isEnabled = false;
+          player4.length = 3;
+          player4.name = data.player3.name;
+          player4.playerNumber = data.player3.playerNumber;
           break;
       }
     });
@@ -302,6 +416,7 @@
     socket.on('start-match', function(data){
       player2.isEnabled = true;
       player3.isEnabled = true;
+      player4.isEnabled = true;
       snake.isEnabled = true;
       document.getElementById('timer').innerHTML = time;
       timer_interval = setInterval(function(data){
@@ -311,7 +426,7 @@
         if(time == 0)
         {
           clearInterval(timer_interval);
-          var snakes = [snake, player2, player3];
+          var snakes = [snake, player2, player3, player4];
           declareWinner(snakes);
         }
       }, 1000);
@@ -329,6 +444,11 @@
         case player3.playerNumber:
 
           player3 = data;
+          break;
+
+        case player4.playerNumber:
+
+          player4 = data;
           break;
     };
   });
@@ -352,9 +472,9 @@
 
     socket.on('snake-collision', function(data){
 
-      switch(data.name){
+      switch(data.playerNumber){
 
-        case snake.name:
+        case snake.playerNumber:
           snake.head.x = snake.startPositionX;
           snake.head.y = snake.startPositionY;
 
@@ -392,6 +512,19 @@
 
           player3.length = 3;
           break;
+
+        case player4.name:
+          player4.head.x = player4.startPositionX;
+          player4.head.y = player4.startPositionY;
+
+          player4.bodyX = [player4.startPositionX, player4.startPositionX];
+
+          player4.bodyY = [player4.startPositionY + player4.delta, player4.startPositionY + (player4.delta * 2)];
+
+          player4.isEnabled = true;
+
+          player4.length = 3;
+          break;
       }
     });
 
@@ -399,6 +532,7 @@
 
     player2_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
     player3_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
+    player4_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
     food_rectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
 
@@ -439,6 +573,17 @@
       delta : 40,
       isEnabled : false,
       name : "player-3",
+      length : 0,
+    };
+
+    player4 = {
+      head : player4_head,
+      direction : 'up',
+      bodyX : [0, 0],
+      bodyY : [0, 0],
+      delta : 40,
+      isEnabled : false,
+      name : "player-4",
       length : 0,
     };
 
@@ -641,9 +786,9 @@
     {
         moveSnake(snake);
         handleFoodConsumption(snake, food);
-        if(snakesDidCollide(snake, player2) || snakesDidCollide(snake, player3))
+        if(snakesDidCollide(snake, player2) || snakesDidCollide(snake, player3) || snakesDidCollide(snake, player4))
         {
-          socket.emit('snake-collision', {name : snake.name, roomno : snake.roomno});
+          socket.emit('snake-collision', {playerNumber : snake.playerNumber, roomno : snake.roomno});
         }
     }
 
@@ -668,6 +813,11 @@
         drawSnake(player3);
       }
 
+      if(player4.isEnabled)
+      {
+        drawSnake(player4);
+      }
+      
       if(food.isEnabled)
       {
         drawFood(food);
