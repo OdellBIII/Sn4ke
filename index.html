@@ -122,6 +122,9 @@
   var player2;
   var player2_head;
 
+  var player3;
+  var player3_head;
+
   var graphics;
   var counter;
   var cursors;
@@ -144,6 +147,9 @@
 
     socket.on('start-position', function(data){
 
+      snake.startPositionX = data.x;
+      snake.startPositionY = data.y;
+
       snake.head.x = data.x;
       snake.head.y = data.y;
 
@@ -156,31 +162,146 @@
       snake.length = 3;
       snake.roomno = data.roomno;
       snake.ticker = data.ticker;
+      snake.name = data.name;
+
+      snake.playerNumber = data.playerNumber;
 
       snake.total_food = 0;
       config.ticker = 15;
     });
 
-    socket.on('enable-player-2', function(data){
-      console.log("Second player enabled...");
-      player2.head.x = data.x;
-      player2.head.y = data.y;
+    socket.on('enable-other-players', function(data){
 
-      player2.bodyX[0] = data.x;
-      player2.bodyX[1] = data.x;
+      switch(snake.playerNumber){
 
-      player2.bodyY[0] = data.y + 40;
-      player2.bodyY[1] = data.y + 80;
+        case "player-1":
+          console.log("I am player 1");
+          player2.startPositionX = data.player2.x;
+          player2.startPositionY = data.player2.y;
 
-      player2.color = data.color;
-      player2.isEnabled = false;
-      player2.length = 3;
+          player2.head.x = data.player2.x;
+          player2.head.y = data.player2.y;
 
+          player2.bodyX[0] = data.player2.x;
+          player2.bodyX[1] = data.player2.x;
+
+          player2.bodyY[0] = data.player2.y + 40;
+          player2.bodyY[1] = data.player2.y + 80;
+
+          player2.color = data.player2.color;
+          player2.isEnabled = false;
+          player2.length = 3;
+          player2.name = data.player2.name;
+          player2.playerNumber = data.player2.playerNumber;
+
+          player3.startPositionX = data.player3.x;
+          player3.startPositionY = data.player3.y;
+
+          player3.head.x = data.player3.x;
+          player3.head.y = data.player3.y;
+
+          player3.bodyX[0] = data.player3.x;
+          player3.bodyX[1] = data.player3.x;
+
+          player3.bodyY[0] = data.player3.y + 40;
+          player3.bodyY[1] = data.player3.y + 80;
+
+          player3.color = data.player3.color;
+          player3.isEnabled = false;
+          player3.length = 3;
+          player3.name = data.player3.name;
+          player3.playerNumber = data.player3.playerNumber;
+          break;
+
+        case "player-2":
+          console.log("I am player 2");
+          // 1st player instantiation
+          player2.startPositionX = data.player1.x;
+          player2.startPositionY = data.player1.y;
+
+          player2.head.x = data.player1.x;
+          player2.head.y = data.player1.y;
+
+          player2.bodyX[0] = data.player1.x;
+          player2.bodyX[1] = data.player1.x;
+
+          player2.bodyY[0] = data.player1.y + 40;
+          player2.bodyY[1] = data.player1.y + 80;
+
+          player2.color = data.player1.color;
+          player2.isEnabled = false;
+          player2.length = 3;
+          player2.name = data.player1.name;
+          player2.playerNumber = data.player1.playerNumber;
+
+          // 3rd player instantiation
+          player3.startPositionX = data.player3.x;
+          player3.startPositionY = data.player3.y;
+
+          player3.head.x = data.player3.x;
+          player3.head.y = data.player3.y;
+
+          player3.bodyX[0] = data.player3.x;
+          player3.bodyX[1] = data.player3.x;
+
+          player3.bodyY[0] = data.player3.y + 40;
+          player3.bodyY[1] = data.player3.y + 80;
+
+          player3.color = data.player3.color;
+          player3.isEnabled = false;
+          player3.length = 3;
+          player3.name = data.player3.name;
+          player3.playerNumber = data.player3.playerNumber;
+          break;
+
+        case "player-3":
+          console.log("I am player 3");
+
+          player2.startPositionX = data.player1.x;
+          player2.startPositionY = data.player1.y;
+
+          player2.head.x = data.player1.x;
+          player2.head.y = data.player1.y;
+
+          player2.bodyX[0] = data.player1.x;
+          player2.bodyX[1] = data.player1.x;
+
+          player2.bodyY[0] = data.player1.y + 40;
+          player2.bodyY[1] = data.player1.y + 80;
+
+          player2.color = data.player1.color;
+          player2.isEnabled = false;
+          player2.length = 3;
+          player2.name = data.player1.name;
+          player2.playerNumber = data.player1.playerNumber;
+
+
+          player3.startPositionX = data.player2.x;
+          player3.startPositionY = data.player2.y;
+
+          player3.head.x = data.player2.x;
+          player3.head.y = data.player2.y;
+
+          player3.bodyX[0] = data.player2.x;
+          player3.bodyX[1] = data.player2.x;
+
+          player3.bodyY[0] = data.player2.y + 40;
+          player3.bodyY[1] = data.player2.y + 80;
+
+          player3.color = data.player2.color;
+          player3.isEnabled = false;
+          player3.length = 3;
+          player3.name = data.player2.name;
+          player3.playerNumber = data.player2.playerNumber;
+
+          break;
+      }
     });
 
     //Starting match
     socket.on('start-match', function(data){
       player2.isEnabled = true;
+      player3.isEnabled = true;
       snake.isEnabled = true;
       document.getElementById('timer').innerHTML = time;
       timer_interval = setInterval(function(data){
@@ -190,7 +311,8 @@
         if(time == 0)
         {
           clearInterval(timer_interval);
-          declareWinner(snake, player2);
+          var snakes = [snake, player2, player3];
+          declareWinner(snakes);
         }
       }, 1000);
     });
@@ -198,9 +320,18 @@
     //Tracking other player movement
     socket.on('other-player-movement', function(data){
 
-      player2 = data;
+      switch(data.playerNumber){
 
-    });
+        case player2.playerNumber:
+          player2 = data;
+          break;
+
+        case player3.playerNumber:
+
+          player3 = data;
+          break;
+    };
+  });
 
     //Making new food
 
@@ -221,37 +352,53 @@
 
     socket.on('snake-collision', function(data){
 
-      if(data.name == snake.name)
-      {
-        snake.head.x = data.x;
-        snake.head.y = data.y;
+      switch(data.name){
 
-        snake.bodyX = [data.x, data.x];
+        case snake.name:
+          snake.head.x = snake.startPositionX;
+          snake.head.y = snake.startPositionY;
 
-        snake.bodyY = [data.y + snake.delta, data.y + (snake.delta * 2)];
+          snake.bodyX = [snake.startPositionX, snake.startPositionX];
 
-        snake.isEnabled = true;
+          snake.bodyY = [snake.startPositionY + snake.delta, snake.startPositionY + (snake.delta * 2)];
 
-        snake.length = 3;
-      }
-      else if(data.name == player2.name)
-      {
-        player2.head.x = data.x;
-        player2.head.y = data.y;
+          snake.isEnabled = true;
 
-        player2.bodyX = [data.x, data.x];
+          snake.length = 3;
+          break;
 
-        player2.bodyY = [data.y + player2.delta, data.y + (player2.delta * 2)];
+        case player2.name:
+          player2.head.x = player2.startPositionX;
+          player2.head.y = player2.startPositionY;
 
-        player2.isEnabled = true;
+          player2.bodyX = [player2.startPositionX, player2.startPositionX];
 
-        player2.length = 3;
+          player2.bodyY = [player2.startPositionY + player2.delta, player2.startPositionY + (player2.delta * 2)];
+
+          player2.isEnabled = true;
+
+          player2.length = 3;
+          break;
+
+        case player3.name:
+          player3.head.x = player3.startPositionX;
+          player3.head.y = player3.startPositionY;
+
+          player3.bodyX = [player3.startPositionX, player3.startPositionX];
+
+          player3.bodyY = [player3.startPositionY + player3.delta, player3.startPositionY + (player3.delta * 2)];
+
+          player3.isEnabled = true;
+
+          player3.length = 3;
+          break;
       }
     });
 
     rectangle = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
     player2_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
+    player3_head = new Phaser.Geom.Rectangle(700, 400, 30, 30, 0x000000);
 
     food_rectangle = new Phaser.Geom.Rectangle(400, 300, 20, 20, 0x00FF00);
 
@@ -281,6 +428,17 @@
       delta : 40,
       isEnabled : false,
       name : "player-2",
+      length : 0,
+    };
+
+    player3 = {
+      head : player3_head,
+      direction : 'up',
+      bodyX : [0, 0],
+      bodyY : [0, 0],
+      delta : 40,
+      isEnabled : false,
+      name : "player-3",
       length : 0,
     };
 
@@ -412,15 +570,15 @@
       snake_player.total_food += 1;
       socket.emit('consume-food', {roomno : snake_player.roomno});
 
-      if(snake.color == food.color)
+      if(snake_player.color == food.color)
       {
         // The smaller the value, the faster the snake moves.
         // SpeedBoost value must be smaller than config.ticker
         // or the snake will move slower.
 
-        changeSpeed(snake, 10);
+        changeSpeed(snake_player, 10);
         setTimeout(function(){
-          changeSpeed(snake, config.ticker)
+          changeSpeed(snake_player, config.ticker)
         }, 5000);
       }
     }
@@ -446,19 +604,29 @@
     return false;
   }
 
-  function declareWinner(snake_player1, snake_player2)
+  function determineWinner(snake_arr)
   {
-    if(snake_player1.length > snake_player2.length && snake_player1.name == 'player-1')
+
+    var winner = snake_arr.reduce(function(a, b){
+
+      if(a.length >= b.length)
+      {
+
+        return a;
+      }
+      else
+      {
+        return b;
+      }
+    });
+
+    if(winner.name == snake.name)
     {
       document.getElementById('timer').innerHTML = "You won!";
     }
-    else if(snake_player1.length < snake_player2.length && snake_player1.name == 'player-1')
-    {
-      document.getElementById('timer').innerHTML = "You lost!";
-    }
     else
     {
-      document.getElementById('timer').innerHTML = "Tie!";
+      document.getElementById('timer').innerHTML = "You lost!";
     }
   }
 
@@ -473,7 +641,7 @@
     {
         moveSnake(snake);
         handleFoodConsumption(snake, food);
-        if(snakesDidCollide(snake, player2))
+        if(snakesDidCollide(snake, player2) || snakesDidCollide(snake, player3))
         {
           socket.emit('snake-collision', {name : snake.name, roomno : snake.roomno});
         }
@@ -493,6 +661,11 @@
       if(player2.isEnabled)
       {
         drawSnake(player2);
+      }
+
+      if(player3.isEnabled)
+      {
+        drawSnake(player3);
       }
 
       if(food.isEnabled)
