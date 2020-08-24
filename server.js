@@ -8,17 +8,14 @@ var match_rooms = {
   one : {
     counter : 1,
     number_of_players : 0,
-    room : "room-1-" + match_rooms.one.counter,
   },
   three : {
     counter : 1,
     number_of_players : 0,
-    room : "room-3-" + match_rooms.one.counter,
   },
   five : {
     counter : 1,
     number_of_players : 0,
-    room : "room-5-" + match_rooms.one.counter,
   },
 };
 
