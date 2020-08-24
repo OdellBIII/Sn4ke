@@ -93,13 +93,15 @@
 
 
   </style>
+
 </head>
 <body>
   <script src="//cdn.jsdelivr.net/npm/phaser@3.24.0/dist/phaser.js"></script>
   <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   <script>
 
-
+  document.documentElement.requestFullscreen();
+  screen.orientation.lock("landscape");
 
   var config = {
       type: Phaser.AUTO,

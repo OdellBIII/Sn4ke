@@ -13,6 +13,7 @@ Tasks:
 - Increase number of players per room to 4 [DONE]
 - Store spawn locations in player object [DONE]
 - Add in full screen [DONE]
+- Prevent page from rotating [In progress]
 - Handle requests body on server [Not started]
 - Add matchmaking based on wager amount through namespaces [Not started]
 - Add in firebase requests [Not started]
