@@ -10,8 +10,13 @@ Tasks:
 - Add speed boost for x seconds on same color food consumption [DONE]
 - Add information about which snake color you are what color food was consumed [DONE]
 - Add in 2 more spawn locations [Done];
-- Increase number of players per room to 4 [In progress]
-- Store spawn locations in player object [Not started]
-- Add in full screen [Not started]
-- Add sound
+- Increase number of players per room to 4 [DONE]
+- Store spawn locations in player object [DONE]
+- Add in full screen [DONE]
+- Handle requests body on server [Not started]
+- Add matchmaking based on wager amount through namespaces [Not started]
+- Add in firebase requests [Not started]
+- Add colored square to top bar [In progress]
+- Upload to heroku [Not started]
+- Add sound [Not started]
 - Add eyes to snakes [Not started]

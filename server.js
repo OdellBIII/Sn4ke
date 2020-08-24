@@ -4,6 +4,24 @@ const app = express();
 const http = require('http');
 const nocache = require('nocache');
 
+var match_rooms = {
+  one : {
+    counter : 1,
+    number_of_players : 0,
+    room : "room-1-" + match_rooms.one.counter,
+  },
+  three : {
+    counter : 1,
+    number_of_players : 0,
+    room : "room-3-" + match_rooms.one.counter,
+  },
+  five : {
+    counter : 1,
+    number_of_players : 0,
+    room : "room-5-" + match_rooms.one.counter,
+  },
+};
+
 var counter = 0;
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log("Server listening at...");
@@ -16,17 +34,22 @@ app.use(express.static('public'));
 app.use(nocache());
 app.set('etag', false);
 
+var user;
+
 app.get("/", (req, res) => {
+
+  user = req.query;
+
   res.sendFile(path.join(__dirname + "/index.html"));
 });
 
 
 const colors = [0xFF0000, 0x0000FF, 0x00FF00, 0xA87343];
 
-const startPosition1 = {x : 200, y : 400, color : colors[0], ticker : 15, speedBoost : 10, name : "player-1", playerNumber : "player-1"};
-const startPosition2 = {x : 400, y : 400, color : colors[1], ticker : 15, speedBoost : 10, name : "player-2", playerNumber : "player-2"};
-const startPosition3 = {x : 600, y : 400, color : colors[2], ticker : 15, speedBoost : 10, name : "player-3", playerNumber : "player-3"};
-const startPosition4 = {x : 800, y : 400, color : colors[3], ticker : 15, speedBoost : 10, name : "player-4", playerNumber : "player-4"};
+const startPosition1 = {x : 200, y : 400, color : colors[0], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-1", playerNumber : "player-1"};
+const startPosition2 = {x : 400, y : 400, color : colors[1], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-2", playerNumber : "player-2"};
+const startPosition3 = {x : 600, y : 400, color : colors[2], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-3", playerNumber : "player-3"};
+const startPosition4 = {x : 800, y : 400, color : colors[3], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-4", playerNumber : "player-4"};
 
 const other_snakes = {player1 : startPosition1, player2 : startPosition2, player3 : startPosition3, player4 : startPosition4};
 
@@ -47,6 +70,7 @@ io.on('connection', (socket) => {
   if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms['room-'+roomno].length > 3)
   {
     roomno += 1;
+    counter = 0;
   }
 
   console.log("Connection made...");

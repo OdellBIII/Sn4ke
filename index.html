@@ -10,15 +10,14 @@
     }
     body {
       position: fixed;
-      background-color:  #122540;
+      background-color:  #303844;
       width : 100%;
       height : 100%;
       padding : 0px;
       margin : 0;
     }
     canvas {
-      top : 10%;
-      left : 25%;
+
     }
 
     .controller_button {
@@ -26,31 +25,36 @@
       width : 150px;
       height : 150px;
     }
+
     .timer-section {
       background: #515151;
       position: absolute;
-      width : 100%;
+      width : 10%;
+      height : 100%;
       text-align: center;
-      min-width: 100%;
-      top : 0;
-      left: 0;
+      top : 0px;
+      left: 90%;
       right: 0;
       margin : 0 auto;
       padding : 0;
     }
+
     #timer {
+      writing-mode : vertical-rl;
+      text-orientation : mixed;
       text-align: center;
       background-color: #FFFFFF;
       color: #515151;
+      position : absolute;
       width : 50%;
-      margin-left : 25%;
-      margin-right : 25%;
-      margin-top: 0;
-      margin-bottom: 0;
-      padding : 10px;
+      height : 50%;
+      top : 25%;
+      bottom : 25%;
+      left : 0;
+      right : 0;
+      padding : 20px;
       font-style: normal;
       font-family: courier;
-      font-color:
 
     }
 
@@ -59,8 +63,8 @@
       align-content : center;
       padding: 100px;
       position: absolute;
-      top: 50%;
-      left : 30%;
+      top: 75%;
+      left : 5%;
     }
 
     #up {
@@ -84,7 +88,7 @@
     #down {
       position: absolute;
       left: 120px;
-      top : 230px;
+      top : 200px;
     }
 
 
@@ -100,7 +104,7 @@
   var config = {
       type: Phaser.AUTO,
       width: 1000,
-      height: 600,
+      height: 1700,
       scene: {
           preload: preload,
           create: create,
@@ -170,7 +174,7 @@
       snake.playerNumber = data.playerNumber;
 
       snake.total_food = 0;
-      config.ticker = 15;
+      config.ticker = 10;
     });
 
     socket.on('enable-other-players', function(data){
@@ -427,7 +431,7 @@
         {
           clearInterval(timer_interval);
           var snakes = [snake, player2, player3, player4];
-          declareWinner(snakes);
+          determineWinner(snakes);
         }
       }, 1000);
     });
@@ -817,7 +821,7 @@
       {
         drawSnake(player4);
       }
-      
+
       if(food.isEnabled)
       {
         drawFood(food);
@@ -828,27 +832,22 @@
     counter += 1;
   }
   </script>
-  <br />
+  <div class="timer-section">
+    <h1 id="timer">Waiting on another player to connect...</h1>
+  </div>
   <div id="control-pad">
     <div id="up">
       <input type="image" src="img/directional_up.png" class="controller_button" onclick="turnSnake('up')" />
     </div>
-    <br/>
     <div id="left">
       <input type="image" src="img/directional_left.png" class="controller_button" onclick="turnSnake('left')" />
     </div>
     <div id="right">
       <input type="image" src="img/directional_right.png" class="controller_button" onclick="turnSnake('right')" />
     </div>
-    <br/>
     <div id="down">
       <input type="image" src="img/directional_down.png" class="controller_button" onclick="turnSnake('down')" />
     </div>
-    <br/>
-  </div>
-  <br/>
-  <div class="timer-section">
-    <h1 id="timer">Waiting on another player to connect...</h1>
   </div>
 </body>
 </html>
