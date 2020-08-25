@@ -5,16 +5,16 @@ const http = require('http');
 const nocache = require('nocache');
 
 var match_rooms = {
-  one : {
-    counter : 1,
+  1 : {
+    counter : 0,
     number_of_players : 0,
   },
-  three : {
-    counter : 1,
+  3 : {
+    counter : 0,
     number_of_players : 0,
   },
-  five : {
-    counter : 1,
+  5 : {
+    counter : 0,
     number_of_players : 0,
   },
 };
@@ -31,12 +31,12 @@ app.use(express.static('public'));
 app.use(nocache());
 app.set('etag', false);
 
-var user;
-
 app.get("/", (req, res) => {
 
-  user = req.query;
+  var user = req.query;
+  var cookie = {user_id : user.user_id, wager : user.wager};
 
+  res.cookie("user_data", cookie);
   res.sendFile(path.join(__dirname + "/index.html"));
 });
 
@@ -64,20 +64,44 @@ function generateRandomFood(width, height, roomno, colors){
 var roomno = 1;
 io.on('connection', (socket) => {
 
+  let wager = parseInt(socket.handshake.query.wager);
+  console.log("New connections wager is " + wager);
+  console.log(match_rooms);
+
+  if(match_rooms.hasOwnProperty(wager))
+  {
+    if(match_rooms[wager].number_of_players > 3)
+    {
+      match_rooms[wager].counter += 1;
+      match_rooms[wager].number_of_players = 1;
+    }
+    else
+    {
+      match_rooms[wager].number_of_players += 1;
+    }
+  }
+  else
+  {
+    console.log("Wager room did not exist. Creating new one..");
+    match_rooms[wager] = {number_of_players : 1, counter : 0};
+  }
+
+  /*
   if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms['room-'+roomno].length > 3)
   {
     roomno += 1;
     counter = 0;
   }
+  */
 
   console.log("Connection made...");
-  socket.join("room-" + roomno);
-  console.log("Most recent connection just joined room number " + roomno);
+  socket.join("room-" + wager + "-" + match_rooms[wager].counter);
+  console.log("User just joined room-" + wager + "-" + match_rooms[wager].counter);
 
-  startPosition1.roomno = roomno;
-  startPosition2.roomno = roomno;
-  startPosition3.roomno = roomno;
-  startPosition4.roomno = roomno;
+  startPosition1.roomno = wager + "-" + match_rooms[wager].counter;
+  startPosition2.roomno = wager + "-" + match_rooms[wager].counter;
+  startPosition3.roomno = wager + "-" + match_rooms[wager].counter;
+  startPosition4.roomno = wager + "-" + match_rooms[wager].counter;
 
   // Handling user input from client and emitting to other players
   socket.on('other-player-movement', (data) => {
@@ -105,30 +129,34 @@ io.on('connection', (socket) => {
 
   // Determines whether to emit first or second starting position based on when
   // the player joined
-  if (counter == 0)
+  if (match_rooms[wager].number_of_players == 1)
   {
     socket.emit('start-position', startPosition1);
-    //socket.emit('enable-player-2', startPosition2);
+    console.log("First player given position in room-" + startPosition1.roomno);
     counter += 1;
   }
-  else if(counter == 1)
+  else if(match_rooms[wager].number_of_players == 2)
   {
     socket.emit('start-position', startPosition2);
+    console.log("Second player given position in room-" + startPosition2.roomno);
     counter += 1;
   }
-  else if(counter == 2)
+  else if(match_rooms[wager].number_of_players == 3)
   {
     socket.emit('start-position', startPosition3);
+    console.log("Third player given position in room-" + startPosition3.roomno);
     counter += 1;
   }
-  else if(counter == 3)
+  else if(match_rooms[wager].number_of_players == 4)
   {
 
     socket.emit('start-position', startPosition4);
+    console.log("Fourth player given position in room-" + startPosition1.roomno);
 
-    io.in("room-"+roomno).emit('make-food', {x : 500, y : 300});
-    io.in("room-"+roomno).emit("enable-other-players", other_snakes);
-    io.in("room-"+roomno).emit('start-match');
+    io.in("room-"+startPosition4.roomno).emit('make-food', {x : 500, y : 300});
+    io.in("room-"+startPosition4.roomno).emit("enable-other-players", other_snakes);
+    io.in("room-"+startPosition4.roomno).emit('start-match');
+    console.log("Started match in room-" + wager + "-" + match_rooms[wager].counter);
     counter = 0;
   }
 

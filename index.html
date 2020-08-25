@@ -39,6 +39,16 @@
       padding : 0;
     }
 
+    #color-id {
+
+      min-width : 50px;
+      min-height : 50px;
+      background-color: #FFFFFF;
+      position: absolute;
+      left : 20%;
+      top : 85%;
+    }
+
     #timer {
       writing-mode : vertical-rl;
       text-orientation : mixed;
@@ -100,9 +110,6 @@
   <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   <script>
 
-  document.documentElement.requestFullscreen();
-  screen.orientation.lock("landscape");
-
   var config = {
       type: Phaser.AUTO,
       width: 1000,
@@ -145,6 +152,22 @@
   var time;
   var timer_interval;
 
+  function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+
   function preload ()
   {
 
@@ -152,7 +175,11 @@
 
   function create ()
   {
-    socket = io("http://localhost:3000");
+    var cookie = getCookie("user_data");
+    console.log(cookie.substring(2));
+    var user = JSON.parse(cookie.substring(2));
+
+    socket = io("http://localhost:3000?wager=" + user.wager);
 
     socket.on('start-position', function(data){
 
@@ -177,6 +204,9 @@
 
       snake.total_food = 0;
       config.ticker = 10;
+
+      console.log(data.color);
+      document.getElementById('color-id').style.backgroundColor = "#" + data.color.toString(16);
     });
 
     socket.on('enable-other-players', function(data){
@@ -836,6 +866,7 @@
   </script>
   <div class="timer-section">
     <h1 id="timer">Waiting on another player to connect...</h1>
+    <div id="color-id"></div>
   </div>
   <div id="control-pad">
     <div id="up">
