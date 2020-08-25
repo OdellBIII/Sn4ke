@@ -206,7 +206,7 @@
       config.ticker = 10;
 
       console.log(data.color);
-      document.getElementById('color-id').style.backgroundColor = "#" + data.color.toString(16);
+      //document.getElementById('color-id').style.backgroundColor = "#" + data.color.toString(16);
     });
 
     socket.on('enable-other-players', function(data){
@@ -866,7 +866,7 @@
   </script>
   <div class="timer-section">
     <h1 id="timer">Waiting on another player to connect...</h1>
-    <div id="color-id"></div>
+    <!-- <div id="color-id"></div> -->
   </div>
   <div id="control-pad">
     <div id="up">
