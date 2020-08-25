@@ -179,7 +179,7 @@
     console.log(cookie.substring(2));
     var user = JSON.parse(cookie.substring(2));
 
-    socket = io("http://localhost:3000?wager=" + user.wager);
+    socket = io("https://sn4ke.herokuapp.com?wager=" + user.wager);
 
     socket.on('start-position', function(data){
 
