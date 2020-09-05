@@ -43,12 +43,19 @@ app.get("/", (req, res) => {
 
 const colors = [0xFF0000, 0x0000FF, 0x00FF00, 0xA87343];
 
-const startPosition1 = {x : 200, y : 400, color : colors[0], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-1", playerNumber : "player-1"};
-const startPosition2 = {x : 400, y : 400, color : colors[1], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-2", playerNumber : "player-2"};
-const startPosition3 = {x : 600, y : 400, color : colors[2], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-3", playerNumber : "player-3"};
-const startPosition4 = {x : 800, y : 400, color : colors[3], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-4", playerNumber : "player-4"};
+const snake_1 = {x : 200, y : 400, color : colors[0], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-1", playerNumber : "player-1"};
+/*
+snake_1.bodyY = [];
+snake_1.bodyY[0] = snake_1.y + 40;
+snake_1.bodyY[1] = snake_1.y + 80;
+snake_1.bodyX[0] = snake_1.x;
+snake_1.bodyX[1] = snake_1.x;
+*/
+const snake_2 = {x : 400, y : 400, color : colors[1], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-2", playerNumber : "player-2"};
+const snake_3 = {x : 600, y : 400, color : colors[2], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-3", playerNumber : "player-3"};
+const snake_4 = {x : 800, y : 400, color : colors[3], ticker : 10, speedBoost : 10, user_id : "", wager : 0, name : "player-4", playerNumber : "player-4"};
 
-const other_snakes = {player1 : startPosition1, player2 : startPosition2, player3 : startPosition3, player4 : startPosition4};
+const other_snakes = {player1 : snake_1, player2 : snake_2, player3 : snake_3, player4 : snake_4};
 
 
 // Generate food with random x,y coordinates and random color
@@ -98,10 +105,10 @@ io.on('connection', (socket) => {
   socket.join("room-" + wager + "-" + match_rooms[wager].counter);
   console.log("User just joined room-" + wager + "-" + match_rooms[wager].counter);
 
-  startPosition1.roomno = wager + "-" + match_rooms[wager].counter;
-  startPosition2.roomno = wager + "-" + match_rooms[wager].counter;
-  startPosition3.roomno = wager + "-" + match_rooms[wager].counter;
-  startPosition4.roomno = wager + "-" + match_rooms[wager].counter;
+  snake_1.roomno = wager + "-" + match_rooms[wager].counter;
+  snake_2.roomno = wager + "-" + match_rooms[wager].counter;
+  snake_3.roomno = wager + "-" + match_rooms[wager].counter;
+  snake_4.roomno = wager + "-" + match_rooms[wager].counter;
 
   // Handling user input from client and emitting to other players
   socket.on('other-player-movement', (data) => {
@@ -122,40 +129,44 @@ io.on('connection', (socket) => {
   // Handling when the connected client collides with another client
   socket.on('snake-collision', function(data){
 
-    socket.to("room-"+data.roomno).emit('snake-collsion', startPosition1);
+    socket.to("room-"+data.roomno).emit('snake-collsion', snake_1);
 
-    socket.emit('snake-collision', startPosition1);
+    socket.emit('snake-collision', snake_1);
+  });
+
+  socket.on("disconnect", function(data){
+
   });
 
   // Determines whether to emit first or second starting position based on when
   // the player joined
   if (match_rooms[wager].number_of_players == 1)
   {
-    socket.emit('start-position', startPosition1);
-    console.log("First player given position in room-" + startPosition1.roomno);
+    socket.emit('start-position', snake_1);
+    console.log("First player given position in room-" + snake_1.roomno);
     counter += 1;
   }
   else if(match_rooms[wager].number_of_players == 2)
   {
-    socket.emit('start-position', startPosition2);
-    console.log("Second player given position in room-" + startPosition2.roomno);
+    socket.emit('start-position', snake_2);
+    console.log("Second player given position in room-" + snake_2.roomno);
     counter += 1;
   }
   else if(match_rooms[wager].number_of_players == 3)
   {
-    socket.emit('start-position', startPosition3);
-    console.log("Third player given position in room-" + startPosition3.roomno);
+    socket.emit('start-position', snake_3);
+    console.log("Third player given position in room-" + snake_3.roomno);
     counter += 1;
   }
   else if(match_rooms[wager].number_of_players == 4)
   {
 
-    socket.emit('start-position', startPosition4);
-    console.log("Fourth player given position in room-" + startPosition1.roomno);
+    socket.emit('start-position', snake_4);
+    console.log("Fourth player given position in room-" + snake_1.roomno);
 
-    io.in("room-"+startPosition4.roomno).emit('make-food', {x : 500, y : 300});
-    io.in("room-"+startPosition4.roomno).emit("enable-other-players", other_snakes);
-    io.in("room-"+startPosition4.roomno).emit('start-match');
+    io.in("room-"+snake_4.roomno).emit('make-food', {x : 500, y : 300});
+    io.in("room-"+snake_4.roomno).emit("enable-other-players", other_snakes);
+    io.in("room-"+snake_4.roomno).emit('start-match');
     console.log("Started match in room-" + wager + "-" + match_rooms[wager].counter);
     counter = 0;
   }
