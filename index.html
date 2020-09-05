@@ -179,7 +179,7 @@
     console.log(cookie.substring(2));
     var user = JSON.parse(cookie.substring(2));
 
-    socket = io("https://sn4ke.herokuapp.com?wager=" + user.wager);
+    socket = io("localhost:3000?room_id=" + user.room_id);
 
     socket.on('start-position', function(data){
 
@@ -196,7 +196,7 @@
 
       snake.isEnabled = false;
       snake.length = 3;
-      snake.roomno = data.roomno;
+      snake.room_id = data.room_id;
       snake.ticker = data.ticker;
       snake.name = data.name;
 
@@ -586,7 +586,7 @@
       isEnabled : false,
       name : "player-1",
       length : 0,
-      roomno : "",
+      room_id : "",
     };
 
 
@@ -749,7 +749,7 @@
       food.isEnabled = false;
       snake_player.length += 1;
       snake_player.total_food += 1;
-      socket.emit('consume-food', {roomno : snake_player.roomno});
+      socket.emit('consume-food', {room_id : snake_player.room_id});
 
       if(snake_player.color == food.color)
       {
@@ -824,7 +824,7 @@
         handleFoodConsumption(snake, food);
         if(snakesDidCollide(snake, player2) || snakesDidCollide(snake, player3) || snakesDidCollide(snake, player4))
         {
-          socket.emit('snake-collision', {playerNumber : snake.playerNumber, roomno : snake.roomno});
+          socket.emit('snake-collision', {playerNumber : snake.playerNumber, room_id : snake.room_id});
         }
     }
 
