@@ -175,11 +175,11 @@
 
   function create ()
   {
-    var cookie = getCookie("user_data");
+    var cookie = getCookie("user_data_sn4ke");
     console.log(cookie.substring(2));
     var user = JSON.parse(cookie.substring(2));
 
-    socket = io("localhost:3000?room_id=" + user.room_id);
+    socket = io("https://sn4ke.herokuapp.com?room_id=" + user.room_id);
 
     socket.on('start-position', function(data){
 

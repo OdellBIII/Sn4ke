@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
   var user = req.query;
   var cookie = {user_id : user.user_id, room_id : user.room_id};
 
-  res.cookie("user_data", cookie);
+  res.cookie("user_data_sn4ke", cookie);
   res.sendFile(path.join(__dirname + "/index.html"));
 });
 
